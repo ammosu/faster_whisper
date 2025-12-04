@@ -24,6 +24,10 @@
             --ripple: #06b6d4;
             --ripple-soft: rgba(6, 182, 212, 0.12);
 
+            /* 紫色錄音 */
+            --record: #a855f7;
+            --record-soft: rgba(168, 85, 247, 0.15);
+
             /* 文字色 */
             --text-bright: #f8fafc;
             --text-soft: #94a3b8;
@@ -61,7 +65,7 @@
             overflow-x: hidden;
         }
 
-        /* 動態背景 - 聲波紋理 */
+        /* 動態背景 */
         .bg-canvas {
             position: fixed;
             top: 0;
@@ -104,7 +108,6 @@
             75% { transform: translate(-3%, -1%) rotate(0.5deg); }
         }
 
-        /* 網格紋理 */
         .grid-texture {
             position: absolute;
             width: 100%;
@@ -117,7 +120,6 @@
             mask-image: radial-gradient(ellipse at center, black 0%, transparent 70%);
         }
 
-        /* 主頁面 */
         .page {
             position: relative;
             z-index: 1;
@@ -169,8 +171,53 @@
             font-size: 18px;
             color: var(--text-muted);
             font-weight: 400;
-            max-width: 400px;
+            max-width: 440px;
             margin: 0 auto;
+        }
+
+        /* 輸入模式切換 */
+        .input-mode-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 32px;
+        }
+
+        .mode-tab {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 100px;
+            color: var(--text-soft);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .mode-tab:hover {
+            background: var(--glass-hover);
+            color: var(--text-bright);
+        }
+
+        .mode-tab.active {
+            background: var(--ripple-soft);
+            border-color: var(--ripple);
+            color: var(--ripple);
+        }
+
+        .mode-tab.active.record-tab {
+            background: var(--record-soft);
+            border-color: var(--record);
+            color: var(--record);
+        }
+
+        .mode-tab svg {
+            width: 18px;
+            height: 18px;
         }
 
         /* 主要容器 */
@@ -200,12 +247,23 @@
                 0 0 60px var(--ripple-soft);
         }
 
-        /* 上傳區域 */
-        .upload-zone {
+        /* 輸入區域容器 */
+        .input-zone {
             display: flex;
             flex-direction: column;
         }
 
+        .input-panel {
+            display: none;
+        }
+
+        .input-panel.active {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        /* 上傳區域 */
         .upload-area {
             flex: 1;
             min-height: 280px;
@@ -377,6 +435,160 @@
             background: rgba(239, 68, 68, 0.1);
         }
 
+        /* 錄音區域 */
+        .record-area {
+            flex: 1;
+            min-height: 280px;
+            border: 2px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .record-area::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, var(--record-soft) 0%, transparent 70%);
+            opacity: 0.5;
+        }
+
+        /* 錄音按鈕 */
+        .record-btn {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--record) 0%, #7c3aed 100%);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-bottom: 24px;
+            z-index: 1;
+        }
+
+        .record-btn::before {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--record) 0%, #7c3aed 100%);
+            opacity: 0.3;
+            transition: all 0.3s ease;
+        }
+
+        .record-btn:hover::before {
+            inset: -8px;
+            opacity: 0.4;
+        }
+
+        .record-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 40px rgba(168, 85, 247, 0.4);
+        }
+
+        .record-btn.recording {
+            animation: pulse-record 1.5s ease-in-out infinite;
+        }
+
+        .record-btn.recording::before {
+            animation: pulse-ring 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse-record {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes pulse-ring {
+            0%, 100% { inset: -4px; opacity: 0.3; }
+            50% { inset: -16px; opacity: 0.1; }
+        }
+
+        .record-btn svg {
+            width: 48px;
+            height: 48px;
+            color: white;
+            position: relative;
+            z-index: 1;
+        }
+
+        .record-btn.recording svg {
+            display: none;
+        }
+
+        .record-btn.recording::after {
+            content: '';
+            width: 32px;
+            height: 32px;
+            background: white;
+            border-radius: 6px;
+        }
+
+        .record-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-bright);
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .record-subtitle {
+            font-size: 14px;
+            color: var(--text-muted);
+            position: relative;
+            z-index: 1;
+        }
+
+        .record-timer {
+            display: none;
+            font-family: 'Space Grotesk', monospace;
+            font-size: 32px;
+            font-weight: 600;
+            color: var(--record);
+            margin-top: 16px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .record-timer.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        /* 錄音可視化 */
+        .record-visualizer {
+            display: none;
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            height: 60px;
+            gap: 3px;
+            align-items: center;
+        }
+
+        .record-visualizer.active {
+            display: flex;
+        }
+
+        .viz-bar {
+            width: 4px;
+            height: 20px;
+            background: var(--record);
+            border-radius: 4px;
+            transition: height 0.1s ease;
+        }
+
         /* 設定面板 */
         .settings-panel {
             display: flex;
@@ -451,7 +663,7 @@
             color: var(--text-bright);
         }
 
-        /* 動作按鈕 */
+        /* 動作區 */
         .action-section {
             grid-column: 1 / -1;
             display: flex;
@@ -529,7 +741,7 @@
             z-index: 1;
         }
 
-        /* 載入狀態 - 聲波動畫 */
+        /* 載入狀態 */
         .loading-section {
             display: none;
             grid-column: 1 / -1;
@@ -652,9 +864,16 @@
             background-clip: text;
         }
 
+        .result-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
         .result-meta {
             display: flex;
             gap: 20px;
+            flex-wrap: wrap;
         }
 
         .meta-tag {
@@ -673,6 +892,34 @@
             width: 14px;
             height: 14px;
             color: var(--amber);
+        }
+
+        /* 下載按鈕 */
+        .btn-download {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 100px;
+            color: var(--text-soft);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .btn-download:hover {
+            background: var(--ripple-soft);
+            border-color: var(--ripple);
+            color: var(--ripple);
+        }
+
+        .btn-download svg {
+            width: 16px;
+            height: 16px;
         }
 
         .result-grid {
@@ -742,7 +989,7 @@
             line-height: 1.6;
         }
 
-        /* 滾動條樣式 */
+        /* 滾動條 */
         .timeline-card::-webkit-scrollbar {
             width: 6px;
         }
@@ -760,7 +1007,7 @@
             background: var(--text-muted);
         }
 
-        /* 響應式設計 */
+        /* 響應式 */
         @media (max-width: 900px) {
             .main-container {
                 grid-template-columns: 1fr;
@@ -811,6 +1058,14 @@
                 flex-direction: column;
                 align-items: flex-start;
             }
+
+            .input-mode-tabs {
+                flex-direction: column;
+            }
+
+            .mode-tab {
+                justify-content: center;
+            }
         }
     </style>
 </head>
@@ -833,37 +1088,79 @@
                 Powered by Whisper
             </div>
             <h1>語音轉文字</h1>
-            <p>上傳音訊檔案，讓 AI 為您精準轉錄每一個字</p>
+            <p>上傳音訊檔案或直接錄音，AI 為您精準轉錄並生成字幕</p>
         </header>
 
+        <!-- 輸入模式切換 -->
+        <div class="input-mode-tabs">
+            <button class="mode-tab active" data-mode="upload">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="17 8 12 3 7 8"/>
+                    <line x1="12" y1="3" x2="12" y2="15"/>
+                </svg>
+                上傳檔案
+            </button>
+            <button class="mode-tab record-tab" data-mode="record">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                    <line x1="12" y1="19" x2="12" y2="22"/>
+                </svg>
+                即時錄音
+            </button>
+        </div>
+
         <div class="main-container">
-            <!-- 上傳區域 -->
-            <div class="glass-card upload-zone">
-                <div class="upload-area" id="uploadArea">
-                    <div class="wave-icon">
-                        <div class="wave-bar"></div>
-                        <div class="wave-bar"></div>
-                        <div class="wave-bar"></div>
-                        <div class="wave-bar"></div>
-                        <div class="wave-bar"></div>
-                        <div class="wave-bar"></div>
-                        <div class="wave-bar"></div>
+            <!-- 輸入區域 -->
+            <div class="glass-card input-zone">
+                <!-- 上傳面板 -->
+                <div class="input-panel active" id="uploadPanel">
+                    <div class="upload-area" id="uploadArea">
+                        <div class="wave-icon">
+                            <div class="wave-bar"></div>
+                            <div class="wave-bar"></div>
+                            <div class="wave-bar"></div>
+                            <div class="wave-bar"></div>
+                            <div class="wave-bar"></div>
+                            <div class="wave-bar"></div>
+                            <div class="wave-bar"></div>
+                        </div>
+                        <p class="upload-title" id="uploadTitle">拖放或點擊上傳音訊</p>
+                        <p class="upload-subtitle">支援 MP3、WAV、OGG、FLAC、M4A、WebM</p>
+                        <input type="file" id="fileInput" accept="audio/*">
                     </div>
-                    <p class="upload-title" id="uploadTitle">拖放或點擊上傳音訊</p>
-                    <p class="upload-subtitle">支援 MP3、WAV、OGG、FLAC、M4A、WebM</p>
-                    <input type="file" id="fileInput" accept="audio/*">
+                    <div class="file-info" id="fileInfo">
+                        <svg class="file-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 18V5l12-2v13"/>
+                            <circle cx="6" cy="18" r="3"/>
+                            <circle cx="18" cy="16" r="3"/>
+                        </svg>
+                        <span class="file-name" id="fileName"></span>
+                        <svg class="file-remove" id="fileRemove" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"/>
+                            <line x1="6" y1="6" x2="18" y2="18"/>
+                        </svg>
+                    </div>
                 </div>
-                <div class="file-info" id="fileInfo">
-                    <svg class="file-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M9 18V5l12-2v13"/>
-                        <circle cx="6" cy="18" r="3"/>
-                        <circle cx="18" cy="16" r="3"/>
-                    </svg>
-                    <span class="file-name" id="fileName"></span>
-                    <svg class="file-remove" id="fileRemove" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="18" y1="6" x2="6" y2="18"/>
-                        <line x1="6" y1="6" x2="18" y2="18"/>
-                    </svg>
+
+                <!-- 錄音面板 -->
+                <div class="input-panel" id="recordPanel">
+                    <div class="record-area">
+                        <button class="record-btn" id="recordBtn">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+                                <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                                <line x1="12" y1="19" x2="12" y2="22"/>
+                            </svg>
+                        </button>
+                        <p class="record-title" id="recordTitle">點擊開始錄音</p>
+                        <p class="record-subtitle" id="recordSubtitle">錄製完成後將自動進行轉錄</p>
+                        <div class="record-timer" id="recordTimer">00:00</div>
+                        <div class="record-visualizer" id="recordVisualizer">
+                            <!-- 動態生成的可視化條 -->
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -916,7 +1213,7 @@
                         <path d="M12 16v-4"/>
                         <path d="M12 8h.01"/>
                     </svg>
-                    <span id="actionInfoText">選擇音訊檔案後即可開始轉錄</span>
+                    <span id="actionInfoText">選擇音訊檔案或開始錄音</span>
                 </div>
                 <button class="btn-primary" id="transcribeBtn" disabled>
                     <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -938,7 +1235,7 @@
                     <div class="loading-bar"></div>
                 </div>
                 <p class="loading-text">正在分析音訊內容</p>
-                <p class="loading-subtext">這可能需要一些時間，取決於檔案長度</p>
+                <p class="loading-subtext">這可能需要一些時間，取決於音訊長度</p>
             </div>
 
             <!-- 錯誤狀態 -->
@@ -955,23 +1252,51 @@
         <!-- 結果區域 -->
         <section class="result-section" id="result">
             <div class="result-header">
-                <h2 class="result-title">轉錄結果</h2>
-                <div class="result-meta">
-                    <div class="meta-tag">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="10"/>
-                            <path d="M2 12h20"/>
-                            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-                        </svg>
-                        <span id="detectedLanguage">-</span>
+                <div>
+                    <h2 class="result-title">轉錄結果</h2>
+                    <div class="result-meta" style="margin-top: 12px;">
+                        <div class="meta-tag">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"/>
+                                <path d="M2 12h20"/>
+                                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                            </svg>
+                            <span id="detectedLanguage">-</span>
+                        </div>
+                        <div class="meta-tag">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"/>
+                                <polyline points="12 6 12 12 16 14"/>
+                            </svg>
+                            <span id="duration">-</span>
+                        </div>
                     </div>
-                    <div class="meta-tag">
+                </div>
+                <div class="result-actions">
+                    <button class="btn-download" id="downloadSRT">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="10"/>
-                            <polyline points="12 6 12 12 16 14"/>
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="7 10 12 15 17 10"/>
+                            <line x1="12" y1="15" x2="12" y2="3"/>
                         </svg>
-                        <span id="duration">-</span>
-                    </div>
+                        下載 SRT
+                    </button>
+                    <button class="btn-download" id="downloadVTT">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="7 10 12 15 17 10"/>
+                            <line x1="12" y1="15" x2="12" y2="3"/>
+                        </svg>
+                        下載 VTT
+                    </button>
+                    <button class="btn-download" id="downloadTXT">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="7 10 12 15 17 10"/>
+                            <line x1="12" y1="15" x2="12" y2="3"/>
+                        </svg>
+                        下載 TXT
+                    </button>
                 </div>
             </div>
 
@@ -1008,6 +1333,7 @@
     </div>
 
     <script>
+        // DOM 元素
         const uploadArea = document.getElementById('uploadArea');
         const uploadTitle = document.getElementById('uploadTitle');
         const fileInput = document.getElementById('fileInput');
@@ -1021,17 +1347,77 @@
         const error = document.getElementById('error');
         const errorText = document.getElementById('errorText');
 
-        let selectedFile = null;
+        // 錄音相關元素
+        const recordBtn = document.getElementById('recordBtn');
+        const recordTitle = document.getElementById('recordTitle');
+        const recordSubtitle = document.getElementById('recordSubtitle');
+        const recordTimer = document.getElementById('recordTimer');
+        const recordVisualizer = document.getElementById('recordVisualizer');
 
-        // Upload area click
+        // 模式切換
+        const modeTabs = document.querySelectorAll('.mode-tab');
+        const uploadPanel = document.getElementById('uploadPanel');
+        const recordPanel = document.getElementById('recordPanel');
+
+        // 狀態變數
+        let selectedFile = null;
+        let currentMode = 'upload';
+        let transcriptData = null;
+
+        // 錄音相關變數
+        let mediaRecorder = null;
+        let audioChunks = [];
+        let isRecording = false;
+        let recordingStartTime = null;
+        let timerInterval = null;
+        let audioContext = null;
+        let analyser = null;
+        let dataArray = null;
+
+        // 初始化可視化條
+        function initVisualizer() {
+            recordVisualizer.innerHTML = '';
+            for (let i = 0; i < 32; i++) {
+                const bar = document.createElement('div');
+                bar.className = 'viz-bar';
+                recordVisualizer.appendChild(bar);
+            }
+        }
+        initVisualizer();
+
+        // 模式切換
+        modeTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const mode = tab.dataset.mode;
+                if (mode === currentMode) return;
+
+                currentMode = mode;
+                modeTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+
+                if (mode === 'upload') {
+                    uploadPanel.classList.add('active');
+                    recordPanel.classList.remove('active');
+                    updateActionHint();
+                } else {
+                    uploadPanel.classList.remove('active');
+                    recordPanel.classList.add('active');
+                    actionInfoText.textContent = '點擊錄音按鈕開始';
+                    transcribeBtn.disabled = true;
+                }
+
+                result.classList.remove('active');
+                error.classList.remove('active');
+            });
+        });
+
+        // ============ 上傳功能 ============
         uploadArea.addEventListener('click', () => fileInput.click());
 
-        // File selection
         fileInput.addEventListener('change', (e) => {
             handleFile(e.target.files[0]);
         });
 
-        // Drag and drop
         uploadArea.addEventListener('dragover', (e) => {
             e.preventDefault();
             uploadArea.classList.add('dragover');
@@ -1047,7 +1433,6 @@
             handleFile(e.dataTransfer.files[0]);
         });
 
-        // Remove file
         fileRemove.addEventListener('click', (e) => {
             e.stopPropagation();
             clearFile();
@@ -1078,11 +1463,129 @@
             uploadTitle.textContent = '拖放或點擊上傳音訊';
 
             transcribeBtn.disabled = true;
-            actionInfoText.textContent = '選擇音訊檔案後即可開始轉錄';
+            updateActionHint();
         }
 
-        // Transcribe button
-        transcribeBtn.addEventListener('click', async () => {
+        function updateActionHint() {
+            if (currentMode === 'upload') {
+                actionInfoText.textContent = selectedFile ? '準備就緒，點擊按鈕開始轉錄' : '選擇音訊檔案後即可開始轉錄';
+                transcribeBtn.disabled = !selectedFile;
+            }
+        }
+
+        // ============ 錄音功能 ============
+        recordBtn.addEventListener('click', toggleRecording);
+
+        async function toggleRecording() {
+            if (isRecording) {
+                stopRecording();
+            } else {
+                await startRecording();
+            }
+        }
+
+        async function startRecording() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+                // 設定音訊可視化
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                analyser = audioContext.createAnalyser();
+                const source = audioContext.createMediaStreamSource(stream);
+                source.connect(analyser);
+                analyser.fftSize = 64;
+                dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+                // 設定 MediaRecorder
+                mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+                audioChunks = [];
+
+                mediaRecorder.ondataavailable = (e) => {
+                    if (e.data.size > 0) {
+                        audioChunks.push(e.data);
+                    }
+                };
+
+                mediaRecorder.onstop = async () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                    selectedFile = new File([audioBlob], 'recording.webm', { type: 'audio/webm' });
+
+                    // 清理
+                    stream.getTracks().forEach(track => track.stop());
+                    if (audioContext) {
+                        audioContext.close();
+                        audioContext = null;
+                    }
+
+                    // 自動開始轉錄
+                    await transcribe();
+                };
+
+                mediaRecorder.start();
+                isRecording = true;
+                recordingStartTime = Date.now();
+
+                // 更新 UI
+                recordBtn.classList.add('recording');
+                recordTitle.textContent = '錄音中...';
+                recordSubtitle.textContent = '再次點擊停止錄音';
+                recordTimer.classList.add('active');
+                recordVisualizer.classList.add('active');
+
+                // 啟動計時器
+                timerInterval = setInterval(updateTimer, 100);
+
+                // 啟動可視化
+                visualize();
+
+            } catch (err) {
+                showError('無法存取麥克風：' + err.message);
+            }
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && isRecording) {
+                mediaRecorder.stop();
+                isRecording = false;
+
+                // 停止計時器
+                clearInterval(timerInterval);
+
+                // 更新 UI
+                recordBtn.classList.remove('recording');
+                recordTitle.textContent = '處理中...';
+                recordSubtitle.textContent = '正在準備轉錄';
+                recordVisualizer.classList.remove('active');
+            }
+        }
+
+        function updateTimer() {
+            const elapsed = Date.now() - recordingStartTime;
+            const seconds = Math.floor(elapsed / 1000);
+            const minutes = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            recordTimer.textContent = `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function visualize() {
+            if (!isRecording || !analyser) return;
+
+            analyser.getByteFrequencyData(dataArray);
+            const bars = recordVisualizer.querySelectorAll('.viz-bar');
+
+            bars.forEach((bar, i) => {
+                const value = dataArray[i] || 0;
+                const height = Math.max(4, (value / 255) * 50);
+                bar.style.height = `${height}px`;
+            });
+
+            requestAnimationFrame(visualize);
+        }
+
+        // ============ 轉錄功能 ============
+        transcribeBtn.addEventListener('click', transcribe);
+
+        async function transcribe() {
             if (!selectedFile) return;
 
             const formData = new FormData();
@@ -1105,6 +1608,7 @@
                 const data = await response.json();
 
                 if (data.success) {
+                    transcriptData = data;
                     displayResult(data);
                 } else {
                     showError(data.error || '轉錄失敗');
@@ -1114,8 +1618,16 @@
             } finally {
                 loading.classList.remove('active');
                 transcribeBtn.disabled = false;
+
+                // 重置錄音 UI
+                if (currentMode === 'record') {
+                    recordTitle.textContent = '點擊開始錄音';
+                    recordSubtitle.textContent = '錄製完成後將自動進行轉錄';
+                    recordTimer.classList.remove('active');
+                    recordTimer.textContent = '00:00';
+                }
             }
-        });
+        }
 
         function displayResult(data) {
             const langMap = {
@@ -1155,6 +1667,78 @@
             actionInfoText.textContent = '轉錄完成！';
         }
 
+        // ============ 字幕下載功能 ============
+        document.getElementById('downloadSRT').addEventListener('click', () => downloadSubtitle('srt'));
+        document.getElementById('downloadVTT').addEventListener('click', () => downloadSubtitle('vtt'));
+        document.getElementById('downloadTXT').addEventListener('click', () => downloadSubtitle('txt'));
+
+        function downloadSubtitle(format) {
+            if (!transcriptData) return;
+
+            let content = '';
+            let filename = `transcript.${format}`;
+            let mimeType = 'text/plain';
+
+            if (format === 'srt') {
+                content = generateSRT(transcriptData.segments);
+                mimeType = 'text/srt';
+            } else if (format === 'vtt') {
+                content = generateVTT(transcriptData.segments);
+                mimeType = 'text/vtt';
+            } else {
+                content = transcriptData.full_text;
+            }
+
+            const blob = new Blob([content], { type: `${mimeType};charset=utf-8` });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function generateSRT(segments) {
+            return segments.map((seg, i) => {
+                const startTime = formatSRTTime(seg.start);
+                const endTime = formatSRTTime(seg.end);
+                return `${i + 1}\n${startTime} --> ${endTime}\n${seg.text}\n`;
+            }).join('\n');
+        }
+
+        function generateVTT(segments) {
+            let vtt = 'WEBVTT\n\n';
+            vtt += segments.map((seg, i) => {
+                const startTime = formatVTTTime(seg.start);
+                const endTime = formatVTTTime(seg.end);
+                return `${i + 1}\n${startTime} --> ${endTime}\n${seg.text}\n`;
+            }).join('\n');
+            return vtt;
+        }
+
+        function formatSRTTime(seconds) {
+            const h = Math.floor(seconds / 3600);
+            const m = Math.floor((seconds % 3600) / 60);
+            const s = Math.floor(seconds % 60);
+            const ms = Math.round((seconds % 1) * 1000);
+            return `${pad(h, 2)}:${pad(m, 2)}:${pad(s, 2)},${pad(ms, 3)}`;
+        }
+
+        function formatVTTTime(seconds) {
+            const h = Math.floor(seconds / 3600);
+            const m = Math.floor((seconds % 3600) / 60);
+            const s = Math.floor(seconds % 60);
+            const ms = Math.round((seconds % 1) * 1000);
+            return `${pad(h, 2)}:${pad(m, 2)}:${pad(s, 2)}.${pad(ms, 3)}`;
+        }
+
+        function pad(num, size) {
+            return num.toString().padStart(size, '0');
+        }
+
+        // ============ 工具函數 ============
         function formatTime(seconds) {
             const mins = Math.floor(seconds / 60);
             const secs = Math.floor(seconds % 60);
